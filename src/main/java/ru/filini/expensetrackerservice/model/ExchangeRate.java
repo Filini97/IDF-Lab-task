@@ -19,10 +19,10 @@ public class ExchangeRate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "source_currency", nullable = false)
     private String sourceCurrency;
 
-    @Column(nullable = false)
+    @Column(name = "target_currency", nullable = false)
     private String targetCurrency;
 
     @Column(nullable = false)
