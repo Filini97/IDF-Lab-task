@@ -6,5 +6,4 @@ import ru.filini.expensetrackerservice.model.ExchangeRate;
 
 @Repository
 public interface ExchangeRateRepository extends JpaRepository<ExchangeRate, Long> {
-
 }

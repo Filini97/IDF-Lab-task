@@ -6,5 +6,4 @@ import ru.filini.expensetrackerservice.model.ExpenseLimit;
 
 @Repository
 public interface ExpenseLimitRepository extends JpaRepository<ExpenseLimit, Long> {
-
 }
