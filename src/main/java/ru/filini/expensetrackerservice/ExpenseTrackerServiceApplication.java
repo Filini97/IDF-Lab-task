@@ -8,14 +8,12 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class ExpenseTrackerServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ExpenseTrackerServiceApplication.class, args);
+    }
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
     }
-
-    public static void main(String[] args) {
-        SpringApplication.run(ExpenseTrackerServiceApplication.class, args);
-    }
-
 }

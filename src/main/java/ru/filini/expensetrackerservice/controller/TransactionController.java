@@ -1,5 +1,6 @@
 package ru.filini.expensetrackerservice.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.filini.expensetrackerservice.model.Transaction;
@@ -13,6 +14,11 @@ import java.util.List;
 public class TransactionController {
 
     private TransactionService transactionService;
+
+    @Autowired
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
 
     @GetMapping
     //получаем списко всех транзакций

@@ -6,7 +6,7 @@ import ru.filini.expensetrackerservice.model.ExpenseLimit;
 import ru.filini.expensetrackerservice.repository.ExpenseLimitRepository;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDate;
 
 @Service
 public class ExpenseLimitService {
@@ -14,24 +14,17 @@ public class ExpenseLimitService {
     @Autowired
     private ExpenseLimitRepository expenseLimitRepository;
 
-    @Autowired
-    private TransactionService transactionService;
-
-    public List<ExpenseLimit> getAllExpenseLimits() {
-        return expenseLimitRepository.findAll();
-    }
-
     //устанавливаем лимит
     public void setExpenseLimit(BigDecimal newLimit, String category, boolean isGoods) {
         ExpenseLimit existingLimit = expenseLimitRepository.findByCategory(category);
         if (existingLimit != null) {
-            //обновляем лимит для указанной категории
             if (isGoods) {
                 existingLimit.setGoodsLimit(newLimit);
+                existingLimit.setGoodsBalanceOfLimit(newLimit);
             } else {
                 existingLimit.setServicesLimit(newLimit);
+                existingLimit.setServicesBalanceOfLimit(newLimit);
             }
-            expenseLimitRepository.save(existingLimit);
         } else {
             //создаем новый лимит для указанной категории
             ExpenseLimit newExpenseLimit = new ExpenseLimit();
@@ -41,7 +34,15 @@ public class ExpenseLimitService {
             } else {
                 newExpenseLimit.setServicesLimit(newLimit);
             }
+            newExpenseLimit.setLimitSetDate(LocalDate.now());
             expenseLimitRepository.save(newExpenseLimit);
         }
+    }
+
+    //получение месячного лимита для указанной категории
+    public BigDecimal getLimitForCategory(String category) {
+        ExpenseLimit expenseLimit = expenseLimitRepository.findByCategory(category);
+
+        return "goods".equals(category) ? expenseLimit.getGoodsLimit() : expenseLimit.getServicesLimit();
     }
 }
