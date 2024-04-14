@@ -34,5 +34,9 @@ public class TransactionService {
         // Сохраняем транзакцию в базе данных
         return transactionRepository.save(transaction);
     }
+
+    public List<Transaction> findTransactionsExceedingLimit() {
+        return transactionRepository.findTransactionsExceedingLimit();
+    }
 }
 

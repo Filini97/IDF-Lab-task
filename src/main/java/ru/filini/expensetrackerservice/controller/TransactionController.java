@@ -34,9 +34,9 @@ public class TransactionController {
         return ResponseEntity.created(URI.create("/transactions/" + createdTransaction.getId())).body(createdTransaction);
     }
 
-    @GetMapping("/exceeding-limit")
+    @GetMapping("/transactions/exceeding-limit")
     public ResponseEntity<List<Transaction>> getTransactionsExceedingLimit() {
-        List<Transaction> transactions = transactionService.findTransactionsExceedingLimit();
-        return ResponseEntity.ok(transactions);
+        List<Transaction> exceedingTransactions = transactionService.findTransactionsExceedingLimit();
+        return ResponseEntity.ok(exceedingTransactions);
     }
 }
