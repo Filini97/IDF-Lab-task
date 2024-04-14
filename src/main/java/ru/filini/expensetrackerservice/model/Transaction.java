@@ -28,9 +28,17 @@ public class Transaction {
     @Column(nullable = false)
     private String type;
 
-    @Column(nullable = false)
-    private LocalDateTime dateTime;
+    @Column(name = "transaction_date", nullable = false)
+    private LocalDateTime transactionDate;
 
-    @Column(nullable = false)
+    @Column(name = "limit_exceeded", nullable = false)
     private boolean limitExceeded;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "expense_limit_id", nullable = false)
+    private ExpenseLimit expenseLimit;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exchange_rate_id", nullable = false)
+    private ExchangeRate exchangeRate;
 }

@@ -6,7 +6,6 @@ import ru.filini.expensetrackerservice.model.Transaction;
 import ru.filini.expensetrackerservice.repository.TransactionRepository;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,18 +24,29 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    //возвращает список транзакций, превысивших месячный лимит, в указанный временный промежуток
-    public List<Transaction> getTransactionsExceedingLimit(BigDecimal monthlyLimit, LocalDateTime startDate, LocalDateTime endDate) {
-        return transactionRepository.findByAmountGreaterThanAndDateTimeBetween(monthlyLimit, startDate, endDate);
-    }
-
     //помечает транзакции, превысившие месячный лимит
-    public void markTransactionsExceedingLimit(List<Transaction> transactions, BigDecimal monthlyLimit) {
+    public void markTransactionsExceedingLimit(List<Transaction> transactions, BigDecimal goodsMonthlyLimit, BigDecimal servicesMonthlyLimit) {
         for (Transaction transaction : transactions) {
+            BigDecimal monthlyLimit;
+            //определяем месячный лимит в зависимости от категории
+            if ("goods".equals(transaction.getType())) {
+                monthlyLimit = goodsMonthlyLimit;
+            } else if ("services".equals(transaction.getType())) {
+                monthlyLimit = servicesMonthlyLimit;
+            } else {
+                //если категория не соответствует ни "goods", ни "services", то пропускаем транзакцию
+                //log.warn("Unknown transaction type: {}", transaction.getType());
+                continue;
+            }
+            //помечаем транзакцию, если ее сумма превышает месячный лимит
             if (transaction.getAmount().compareTo(monthlyLimit) > 0) {
                 transaction.setLimitExceeded(true);
                 transactionRepository.save(transaction);
             }
         }
+    }
+
+    public List<Transaction> findTransactionsExceedingLimit() {
+        return transactionRepository.findTransactionsExceedingLimit();
     }
 }
