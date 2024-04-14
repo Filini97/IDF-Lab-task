@@ -17,10 +17,10 @@ public class ExpenseLimit {
     private Long id;
 
     @Column(name = "goods_monthly_limit", nullable = false)
-    private BigDecimal goodsMonthlyLimit;
+    private BigDecimal goodsLimit;
 
     @Column(name = "services_monthly_limit", nullable = false)
-    private BigDecimal servicesMonthlyLimit;
+    private BigDecimal servicesLimit;
 
     @Column(name = "limit_set_date", nullable = false)
     private LocalDate limitSetDate;
@@ -28,8 +28,8 @@ public class ExpenseLimit {
     private String category;
 
     public ExpenseLimit() {
-        this.goodsMonthlyLimit = BigDecimal.valueOf(1000);
-        this.servicesMonthlyLimit = BigDecimal.valueOf(1000);
+        this.goodsLimit = BigDecimal.valueOf(1000);
+        this.servicesLimit = BigDecimal.valueOf(1000);
         this.limitSetDate = LocalDate.now();
     }
 }

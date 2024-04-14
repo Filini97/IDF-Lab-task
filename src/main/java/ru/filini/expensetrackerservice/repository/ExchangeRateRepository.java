@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface ExchangeRateRepository extends JpaRepository<ExchangeRate, Long> {
-    Optional<ExchangeRate> findExchangeRateBySourceCurrencyAndTargetCurrencyAndDate(String sourceCurrency, String targetCurrency, LocalDate date);
+    Optional<ExchangeRate> findTopBySourceCurrencyAndTargetCurrencyOrderByDateDesc(String sourceCurrency, String targetCurrency);
 }

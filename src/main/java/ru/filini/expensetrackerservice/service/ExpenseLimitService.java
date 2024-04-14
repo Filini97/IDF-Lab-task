@@ -27,9 +27,9 @@ public class ExpenseLimitService {
         if (existingLimit != null) {
             //обновляем лимит для указанной категории
             if (isGoods) {
-                existingLimit.setGoodsMonthlyLimit(newLimit);
+                existingLimit.setGoodsLimit(newLimit);
             } else {
-                existingLimit.setServicesMonthlyLimit(newLimit);
+                existingLimit.setServicesLimit(newLimit);
             }
             expenseLimitRepository.save(existingLimit);
         } else {
@@ -37,9 +37,9 @@ public class ExpenseLimitService {
             ExpenseLimit newExpenseLimit = new ExpenseLimit();
             newExpenseLimit.setCategory(category);
             if (isGoods) {
-                newExpenseLimit.setGoodsMonthlyLimit(newLimit);
+                newExpenseLimit.setGoodsLimit(newLimit);
             } else {
-                newExpenseLimit.setServicesMonthlyLimit(newLimit);
+                newExpenseLimit.setServicesLimit(newLimit);
             }
             expenseLimitRepository.save(newExpenseLimit);
         }

@@ -30,4 +30,11 @@ public class ExchangeRate {
 
     @Column(nullable = false)
     private LocalDate date;
+
+    public ExchangeRate(String sourceCurrency, String targetCurrency, BigDecimal rate, LocalDate date) {
+        this.sourceCurrency = sourceCurrency;
+        this.targetCurrency = targetCurrency;
+        this.rate = rate;
+        this.date = date;
+    }
 }

@@ -1,57 +1,49 @@
 package ru.filini.expensetrackerservice.service;
 
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import ru.filini.expensetrackerservice.model.ExchangeRate;
 import ru.filini.expensetrackerservice.repository.ExchangeRateRepository;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Optional;
-
 @Service
-@Transactional
 public class ExchangeRateService {
+
+    private static final String API_KEY = "72d9bbf926d649b297e3b99e5dedc2c6";
+    private static final String API_URL = "https://api.twelvedata.com/time_series";
 
     @Autowired
     private ExchangeRateRepository exchangeRateRepository;
 
-    //сохраняем обменный курс в СУБД
-    public void saveExchangeRate(String sourceCurrency, String targetCurrency, BigDecimal rate, LocalDate date) {
-        ExchangeRate exchangeRate = new ExchangeRate();
-        exchangeRate.setSourceCurrency(sourceCurrency);
-        exchangeRate.setTargetCurrency(targetCurrency);
-        exchangeRate.setRate(rate);
-        exchangeRate.setDate(date);
-        exchangeRateRepository.save(exchangeRate);
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public void fetchAndSaveExchangeRates() {
+        //запрос для KZT/USD
+        String kztUsdUrl = buildUrl("KZT/USD");
+        ExchangeRate kztUsdExchangeRate = fetchExchangeRate(kztUsdUrl);
+        exchangeRateRepository.save(kztUsdExchangeRate);
+
+        //запрос для RUB/USD
+        String rubUsdUrl = buildUrl("RUB/USD");
+        ExchangeRate rubUsdExchangeRate = fetchExchangeRate(rubUsdUrl);
+        exchangeRateRepository.save(rubUsdExchangeRate);
     }
 
-    //обновление курса между указанными валютами в указанную дату
-    public void updateExchangeRate(String baseCurrency, String targetCurrency, BigDecimal rate, LocalDate date) {
-        Optional<ExchangeRate> exchangeRateOptional = exchangeRateRepository.findExchangeRateBySourceCurrencyAndTargetCurrencyAndDate(baseCurrency, targetCurrency, date);
-        if (exchangeRateOptional.isPresent()) {
-            ExchangeRate exchangeRate = exchangeRateOptional.get();
-            exchangeRate.setRate(rate);
-            exchangeRateRepository.save(exchangeRate);
+    //запрос с указанием валютной пары
+    private String buildUrl(String symbol) {
+        return String.format("%s?symbol=%s&interval=1day&apikey=%s", API_URL, symbol, API_KEY);
+    }
+
+    //отправка запроса к внешнему API
+    private ExchangeRate fetchExchangeRate(String url) {
+        ExchangeRate exchangeRate = restTemplate.getForObject(url, ExchangeRate.class);
+        if (exchangeRate != null) {
+            return exchangeRate;
         } else {
-            throw new RuntimeException("Exchange rate not found");
+            //в случае, если данные не удалось получить, вернуть последний курс из базы данных
+            return exchangeRateRepository.findTopBySourceCurrencyAndTargetCurrencyOrderByDateDesc("KZT", "USD")
+                    .orElseThrow(() -> new RuntimeException("Unable to fetch exchange rate"));
         }
-    }
-
-    //возвращает курс обмена валют в текущую дату
-    public BigDecimal getExchangeRate(String baseCurrency, String targetCurrency, LocalDate date) {
-        Optional<ExchangeRate> exchangeRateOptional = exchangeRateRepository.findExchangeRateBySourceCurrencyAndTargetCurrencyAndDate(baseCurrency, targetCurrency, date);
-        if (exchangeRateOptional.isPresent()) {
-            return exchangeRateOptional.get().getRate();
-        } else {
-            throw new RuntimeException("Exchange rate not found");
-        }
-    }
-
-    //возвращает текущий курс обмена валют
-    public BigDecimal getExchangeRate(String baseCurrency, String targetCurrency) {
-        LocalDate currentDate = LocalDate.now();
-        return getExchangeRate(baseCurrency, targetCurrency, currentDate);
     }
 }
