@@ -2,6 +2,7 @@ package ru.filini.expensetrackerservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.filini.expensetrackerservice.model.ExpenseLimit;
 import ru.filini.expensetrackerservice.model.Transaction;
 import ru.filini.expensetrackerservice.repository.TransactionRepository;
 
@@ -23,15 +24,15 @@ public class TransactionService {
 
     //сохраняем новую транзакцию и проверяем превышение лимита
     public Transaction saveTransaction(Transaction transaction) {
-        BigDecimal limit = expenseLimitService.getLimitForCategory(transaction.getType());
+        BigDecimal limitBalance = expenseLimitService.getLimitBalanceForCategory(transaction.getType());
+        BigDecimal limit = expenseLimitService.getLimitBalanceForCategory(transaction.getType());
         BigDecimal transactionAmount = transaction.getAmount();
 
-        if (transactionAmount.compareTo(limit) > 0) {
-            // Если транзакция превышает месячный лимит, помечаем ее
-            transaction.setLimitExceeded(true);
-        }
+        transaction.setLimitExceeded(transactionAmount.compareTo(limit) > 0);
 
-        // Сохраняем транзакцию в базе данных
+        BigDecimal updatedBalance = limitBalance.subtract(transactionAmount);
+        expenseLimitService.updateLimitBalanceForCategory(transaction.getType(), updatedBalance);
+
         return transactionRepository.save(transaction);
     }
 

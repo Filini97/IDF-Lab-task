@@ -39,10 +39,21 @@ public class ExpenseLimitService {
         }
     }
 
-    //получение месячного лимита для указанной категории
-    public BigDecimal getLimitForCategory(String category) {
+    //получение остатка от лимита для указанной категории
+    public BigDecimal getLimitBalanceForCategory(String category) {
         ExpenseLimit expenseLimit = expenseLimitRepository.findByCategory(category);
 
-        return "goods".equals(category) ? expenseLimit.getGoodsLimit() : expenseLimit.getServicesLimit();
+        return "goods".equals(category) ? expenseLimit.getGoodsBalanceOfLimit() : expenseLimit.getServicesBalanceOfLimit();
+    }
+
+    //обновление остатка от лимита для указанной категории
+    public void updateLimitBalanceForCategory(String category, BigDecimal updatedBalance) {
+        ExpenseLimit expenseLimit = expenseLimitRepository.findByCategory(category);
+        if ("goods".equals(category)) {
+            expenseLimit.setGoodsBalanceOfLimit(updatedBalance.max(BigDecimal.ZERO));
+        } else {
+            expenseLimit.setServicesBalanceOfLimit(updatedBalance.max(BigDecimal.ZERO));
+        }
+        expenseLimitRepository.save(expenseLimit);
     }
 }
