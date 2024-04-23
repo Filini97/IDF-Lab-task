@@ -2,7 +2,6 @@ package ru.filini.expensetrackerservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.filini.expensetrackerservice.model.ExpenseLimit;
 import ru.filini.expensetrackerservice.model.Transaction;
 import ru.filini.expensetrackerservice.repository.TransactionRepository;
 
@@ -40,4 +39,3 @@ public class TransactionService {
         return transactionRepository.findTransactionsExceedingLimit();
     }
 }
-

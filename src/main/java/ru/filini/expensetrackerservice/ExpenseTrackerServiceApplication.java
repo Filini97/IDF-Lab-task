@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import org.springdoc.core.GroupedOpenApi;
 
 @SpringBootApplication
 public class ExpenseTrackerServiceApplication {
@@ -15,5 +16,13 @@ public class ExpenseTrackerServiceApplication {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
+    }
+
+    @Bean
+    public GroupedOpenApi api() {
+        return GroupedOpenApi.builder()
+                .group("api")
+                .pathsToMatch("/transactions/**", "/expense-limits/**", "/exchange-rates/**")
+                .build();
     }
 }
